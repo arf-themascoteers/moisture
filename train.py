@@ -14,7 +14,7 @@ def train():
     x_train, y_train, x_test, y_test = dr.get_data()
     start_time = time.time()
 
-    for t in range(20):
+    for t in range(100):
         y_train_pred = model(x_train)
         loss = criterion(y_train_pred, y_train)
         print("Epoch ", t, "MSE: ", loss.item())

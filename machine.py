@@ -4,10 +4,10 @@ import torch.nn as nn
 class Machine(nn.Module):
     def __init__(self):
         super(Machine, self).__init__()
-        self.hidden_dim = 32
-        self.num_layers = 4
+        self.hidden_dim = 16
+        self.num_layers = 1
 
-        self.lstm = nn.LSTM(125, self.hidden_dim, self.num_layers, batch_first=True)
+        self.lstm = nn.LSTM(1, self.hidden_dim, self.num_layers, batch_first=True)
         self.fc1 = nn.Linear(self.hidden_dim, 1)
         self.lrelu = nn.LeakyReLU()
         self.fc2 = nn.Linear(16, 1)
@@ -19,4 +19,4 @@ class Machine(nn.Module):
         out = self.fc1(out[:,-1,:])
         # out = self.lrelu(out)
         # out = self.fc2(out)
-        return out.reshape(-1)
+        return out
