@@ -11,11 +11,11 @@ def train():
     criterion = torch.nn.MSELoss(reduction='mean')
     optimiser = torch.optim.Adam(model.parameters(), lr=0.1)
     dr = DataReader()
-    x_train, y_train, x_test, y_test = dr.get_data()
+    image_train, moisture_train, temperature_train, y_train = dr.get_train_data()
     start_time = time.time()
 
     for t in range(100):
-        y_train_pred = model(x_train)
+        y_train_pred = model(image_train, moisture_train, temperature_train)
         loss = criterion(y_train_pred, y_train)
         print("Epoch ", t, "MSE: ", loss.item())
         optimiser.zero_grad()
