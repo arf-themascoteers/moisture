@@ -10,9 +10,10 @@ from datetime import datetime
 class DataReader:
     def __init__(self):
         self.LOOKBACK = 20
+        self.NUM_BANDS = 125
         self.raw_data = pd.read_csv("data/moisture.csv")
         self.data = torch.zeros(len(self.raw_data), 2)
-        self.bands = torch.zeros(len(self.raw_data), 125)
+        self.bands = torch.zeros(len(self.raw_data), self.NUM_BANDS)
         for index, row in self.raw_data.iterrows():
             timestamp = datetime.strptime(row[1], "%Y-%m-%d %H:%M:%S").timestamp()
             moisture = row[2]
@@ -30,15 +31,15 @@ class DataReader:
 
         temporary_temperature = self.data[:,1].reshape(-1,1)
         temporary_temperature = self.temperature_scaler.fit_transform(temporary_temperature)
-        self.data[:,1] = torch.tensor(temporary_moisture[:,0])
+        self.data[:,1] = torch.tensor(temporary_temperature[:,0])
 
         self.data_size = len(self.bands) - self.LOOKBACK
-        sequences = torch.zeros(self.data_size, 125)
+        sequences = torch.zeros(self.data_size, self.LOOKBACK, self.NUM_BANDS)
         results = torch.zeros(len(self.bands))
 
         for index in range(self.data_size):
             sequences[index] = self.bands[index : index + self.LOOKBACK]
-            results = self.data[index + self.LOOKBACK, 0]
+            results[index] = self.data[index + self.LOOKBACK, 0]
 
         test_set_size = int(0.2 * self.data_size)
         train_set_size = self.data_size - test_set_size
@@ -46,8 +47,8 @@ class DataReader:
         self.x_train = sequences[0:train_set_size]
         self.y_train = results[0:train_set_size]
 
-        self.x_test = sequences[train_set_size:-1]
-        self.y_test = results[train_set_size:-1]
+        self.x_test = sequences[train_set_size:train_set_size + test_set_size]
+        self.y_test = results[train_set_size:train_set_size + test_set_size]
 
     def get_data(self):
         return self.x_train, self.y_train, self.x_test, self.y_test
@@ -56,7 +57,4 @@ class DataReader:
 if __name__ == "__main__":
     dr = DataReader()
     x_train, y_train, x_test, y_test = dr.get_data()
-    print(dr.x_train[0,3])
-    print(dr.y_train[0])
-    print(dr.x_test[0, 3])
-    print(dr.y_test[0])
+

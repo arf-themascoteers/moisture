@@ -3,18 +3,18 @@ import torch.nn as nn
 from machine import Machine
 import time
 import numpy as np
-import data_reader
+from data_reader import DataReader
 
 def train():
 
     model = Machine()
     criterion = torch.nn.MSELoss(reduction='mean')
-    optimiser = torch.optim.Adam(model.parameters(), lr=0.01)
-    x_train, y_train, x_test, y_test = data_reader.get_data()
-
+    optimiser = torch.optim.Adam(model.parameters(), lr=0.1)
+    dr = DataReader()
+    x_train, y_train, x_test, y_test = dr.get_data()
     start_time = time.time()
 
-    for t in range(500):
+    for t in range(20):
         y_train_pred = model(x_train)
         loss = criterion(y_train_pred, y_train)
         print("Epoch ", t, "MSE: ", loss.item())
