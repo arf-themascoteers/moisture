@@ -34,11 +34,11 @@ class DataReader:
         self.data[:,1] = torch.tensor(temporary_temperature[:,0])
 
         self.data_size = len(self.bands) - self.LOOKBACK
-        sequences = torch.zeros(self.data_size, self.LOOKBACK-1, 1)
+        sequences = torch.zeros(self.data_size, self.LOOKBACK-1, 125)
         results = torch.zeros(self.data_size, 1)
 
         for index in range(self.data_size):
-            sequences[index,:,0] = self.data[index : index + self.LOOKBACK - 1, 0]
+            sequences[index,:] = self.bands[index : index + self.LOOKBACK - 1]
             results[index,0] = self.data[index + self.LOOKBACK -1, 0]
 
         test_set_size = int(0.3 * self.data_size)
